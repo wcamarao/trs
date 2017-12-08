@@ -1,0 +1,31 @@
+{
+  "name": "trs",
+  "version": "0.1.0",
+  "author": "Wagner Camarao",
+  "description": "trs",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wcamarao/trs"
+  },
+  "scripts": {
+    "build": "rimraf dist/ && babel ./src --out-dir dist/ --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log --copy-files",
+    "test": "mocha --require babel-register",
+    "watch": "mocha --require babel-register --watch"
+  },
+  "dependencies": {
+    "enumify": "^1.0.4",
+    "lodash": "^4.17.4",
+    "winston": "^2.4.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-register": "^6.26.0",
+    "chai": "^4.1.2",
+    "eslint": "^4.12.1",
+    "mocha": "^4.0.1",
+    "rimraf": "^2.6.2",
+    "sinon": "^4.1.3"
+  }
+}
