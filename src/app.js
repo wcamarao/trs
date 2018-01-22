@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import winston from 'winston';
+import Board from './board';
 import Direction from './direction';
 import Toy from './toy';
 
@@ -9,7 +10,8 @@ class App {
    * Initialize toy with 5 by 5 boundaries
    */
   constructor() {
-    this.toy = new Toy(5, 5);
+    const board = new Board(5, 5);
+    this.toy = new Toy(board);
 
     this.logger = new winston.Logger({
       transports: [

@@ -4,15 +4,8 @@ import Direction from './direction';
 
 class Toy {
 
-  /**
-   * Initialize toy within given boundaries
-   *
-   * @param {*} width
-   * @param {*} height
-   */
-  constructor(width, height) {
-    this.width = width;
-    this.height = height;
+  constructor(board) {
+    this.board = board;
 
     this.logger = new winston.Logger({
       transports: [
@@ -32,13 +25,8 @@ class Toy {
    * @param {*} direction
    */
   place(x, y, direction) {
-    if (!this.isValidX(x)) {
-      this.logger.warn(`Ignoring placecement due to invalid x: ${x}`);
-      return;
-    }
-
-    if (!this.isValidY(y)) {
-      this.logger.warn(`Ignoring placecement due to invalid y: ${y}`);
+    if (!this.isValid(x, y)) {
+      this.logger.warn(`Ignoring placement due to invalid position: ${x},${y}`);
       return;
     }
 
@@ -66,7 +54,7 @@ class Toy {
   }
 
   moveNorth() {
-    if (!this.isValidY(this.y + 1)) {
+    if (!this.isValid(this.x, this.y + 1)) {
       this.logger.warn('Ignoring move north due to current placement');
       return;
     }
@@ -75,7 +63,7 @@ class Toy {
   }
 
   moveEast() {
-    if (!this.isValidX(this.x + 1)) {
+    if (!this.isValid(this.x + 1, this.y)) {
       this.logger.warn('Ignoring move east due to current placement');
       return;
     }
@@ -84,7 +72,7 @@ class Toy {
   }
 
   moveSouth() {
-    if (!this.isValidY(this.y - 1)) {
+    if (!this.isValid(this.x, this.y - 1)) {
       this.logger.warn('Ignoring move south due to current placement');
       return;
     }
@@ -93,7 +81,7 @@ class Toy {
   }
 
   moveWest() {
-    if (!this.isValidX(this.x - 1)) {
+    if (!this.isValid(this.x - 1, this.y)) {
       this.logger.warn('Ignoring move west due to current placement');
       return;
     }
@@ -147,16 +135,38 @@ class Toy {
     return `${this.x},${this.y},${this.direction.name}`;
   }
 
+  /**
+   * Find path to position at x, y params
+   *
+   * @param {*} x
+   * @param {*} y
+   */
+  findPath(x, y) {
+    const paths = [{x: this.x, y: this.y}];
+    let currentX = this.x;
+    let currentY = this.y;
+
+    while (currentY !== y) {
+      currentY += y > currentY ? 1 : -1;
+      paths.push({x: currentX, y: currentY});
+    }
+
+    while (currentX !== x) {
+      currentX += x > currentX ? 1 : -1;
+      paths.push({x: currentX, y: currentY});
+    }
+
+    return paths;
+  }
+
   isPlaced() {
     return _.isInteger(this.x) && _.isInteger(this.y) && this.direction instanceof Direction;
   }
 
-  isValidX(x) {
-    return _.isInteger(x) && x >= 0 && x < this.width;
-  }
-
-  isValidY(y) {
-    return _.isInteger(y) && y >= 0 && y < this.height;
+  isValid(x, y) {
+    const xValid = _.isInteger(x) && x >= 0 && x < this.board.width;
+    const yValid = _.isInteger(y) && y >= 0 && y < this.board.height;
+    return xValid && yValid && !this.board.isBlocked(x, y);
   }
 }
 

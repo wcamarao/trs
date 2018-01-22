@@ -1,20 +1,22 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
+import Board from '../src/board';
 import Toy from '../src/toy';
 import Direction from '../src/direction';
 
 describe('Toy', function () {
+  let board;
   let toy;
 
   beforeEach(function () {
-    toy = new Toy(5, 5);
+    board = new Board(5, 5);
+    toy = new Toy(board);
     sinon.stub(toy.logger);
   });
 
   describe('#constructor', function () {
     it('stores width and height', function () {
-      expect(toy.width).to.eql(5);
-      expect(toy.height).to.eql(5);
+      expect(toy.board).to.eql(board);
     });
 
     it('creates a logger', function () {
@@ -81,6 +83,13 @@ describe('Toy', function () {
 
     it('ignores movement when crossing west boundary', function () {
       toy.place(0, 0, Direction.WEST);
+      toy.move();
+      expect(toy.x).to.eql(0);
+    });
+
+    it('ignores movement when stepping onto a blocked cell', function () {
+      board.block(0, 1);
+      toy.place(0, 0, Direction.NORTH);
       toy.move();
       expect(toy.y).to.eql(0);
     });
@@ -198,6 +207,28 @@ describe('Toy', function () {
     it('returns x,y,direction', function () {
       toy.place(0, 0, Direction.NORTH);
       expect(toy.report()).to.eql('0,0,NORTH');
+    });
+  });
+
+  describe('#findPath', function () {
+
+    /**
+     * o o o o o
+     * o o o o o
+     * o o o o o
+     * o o B o o
+     * A o o o o
+     */
+    describe('when there are no blocked cells on the board', function () {
+      it('returns path moving on y axis first', function () {
+        toy.place(0, 0, Direction.NORTH);
+        expect(toy.findPath(2, 1)).to.eql([
+          {x: 0, y: 0},
+          {x: 0, y: 1},
+          {x: 1, y: 1},
+          {x: 2, y: 1}
+        ]);
+      });
     });
   });
 });
