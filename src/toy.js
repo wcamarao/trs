@@ -136,27 +136,16 @@ class Toy {
   }
 
   /**
-   * Find path to position at x, y params
+   * Find path to given position
    *
    * @param {*} x
    * @param {*} y
    */
   findPath(x, y) {
-    const paths = [{x: this.x, y: this.y}];
-    let currentX = this.x;
-    let currentY = this.y;
-
-    while (currentY !== y) {
-      currentY += y > currentY ? 1 : -1;
-      paths.push({x: currentX, y: currentY});
-    }
-
-    while (currentX !== x) {
-      currentX += x > currentX ? 1 : -1;
-      paths.push({x: currentX, y: currentY});
-    }
-
-    return paths;
+    const graph = this.board.buildGraph();
+    const source = `${this.x},${this.y}`;
+    const target = `${x},${y}`;
+    return graph.findShortestPath(source, target);
   }
 
   isPlaced() {

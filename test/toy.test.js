@@ -220,13 +220,40 @@ describe('Toy', function () {
      * A o o o o
      */
     describe('when there are no blocked cells on the board', function () {
-      it('returns path moving on y axis first', function () {
+      it('returns straight path', function () {
         toy.place(0, 0, Direction.NORTH);
         expect(toy.findPath(2, 1)).to.eql([
-          {x: 0, y: 0},
-          {x: 0, y: 1},
-          {x: 1, y: 1},
-          {x: 2, y: 1}
+          ['0,0', '1,0'],
+          ['1,0', '1,1'],
+          ['1,1', '2,1'],
+        ]);
+      });
+    });
+
+    /**
+     * o o o o o
+     * o o o o o
+     * o X X o o
+     * o X B o o
+     * A X o o o
+     */
+    describe('when there are blocked cells on the board', function () {
+      it('returns path surrounding blocked cells', function () {
+        toy.place(0, 0, Direction.NORTH);
+        board.block(1, 0);
+        board.block(1, 1);
+        board.block(1, 2);
+        board.block(2, 2);
+        expect(toy.findPath(2, 1)).to.eql([
+          ['0,0', '0,1'],
+          ['0,1', '0,2'],
+          ['0,2', '0,3'],
+          ['0,3', '1,3'],
+          ['1,3', '2,3'],
+          ['2,3', '3,3'],
+          ['3,3', '3,2'],
+          ['3,2', '3,1'],
+          ['3,1', '2,1'],
         ]);
       });
     });
